@@ -1,0 +1,9 @@
+flask
+dash
+pandas
+numpy
+matplotlib
+mysql-connector-python
+kafka-python
+plotly
+gunicorn
