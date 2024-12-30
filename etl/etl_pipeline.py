@@ -2,50 +2,72 @@ import os
 import pandas as pd
 import mysql.connector
 import logging
+from sqlalchemy import create_engine
 
-# Setup logging
+
+# Configure logging
 logging.basicConfig(
     filename='../logs/etl_pipeline.log',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Ensure the data directory exists
-output_dir = '../data'
-os.makedirs(output_dir, exist_ok=True)
+def run_etl():
+    try:
+        logging.info("Starting ETL process")
 
-# Database connection settings
-db_config = {
-    'host': 'localhost',
-    'user': 'your_username',
-    'password': 'your_password',
-    'database': 'sales_data'
-}
+         # Create SQLAlchemy engine for MySQL connection
+        engine = create_engine("mysql+mysqlconnector://root:R6%40#Siege@localhost/sales_data_pipeline")
+        logging.info("Database connection established using SQLAlchemy")
 
-try:
-    logging.info("Starting ETL process.")
-    # Connect to the database
-    connection = mysql.connector.connect(**db_config)
-    query = "SELECT * FROM raw_sales_data"
-    
-    # Read data from the database
-    df = pd.read_sql(query, connection)
-    logging.info("Data successfully fetched from database.")
 
-    # Perform transformations
-    df['Sales'] = df['Quantity'] * df['Price']
-    transformed_data = df[['Date', 'Region', 'Product', 'Quantity', 'Sales']]
-    
-    # Save the transformed data to CSV
-    output_file = os.path.join(output_dir, 'transformed_sales_data.csv')
-    transformed_data.to_csv(output_file, index=False)
-    logging.info(f"Transformed data saved to {output_file}.")
+        # Define the SQL query
+        query = """
+        SELECT 
+            s.id,
+            s.sale_date,
+            p.product_name,
+            p.category,
+            r.region_name,
+            s.quantity,
+            s.price,
+            s.total
+        FROM 
+            sales s
+        JOIN 
+            products p ON s.product_id = p.product_id
+        JOIN 
+            regions r ON s.region_id = r.region_id
+        """
 
-except Exception as e:
-    logging.error(f"ETL process failed: {e}")
-    print(f"ETL process failed: {e}")
+        # Execute the query and load data into a Pandas DataFrame
+        df = pd.read_sql(query, engine)
+        logging.info("Data successfully retrieved from database")
 
-finally:
-    if 'connection' in locals() and connection.is_connected():
-        connection.close()
-        logging.info("Database connection closed.")
+        # Perform transformations (example: ensure proper datatypes)
+        df['sale_date'] = pd.to_datetime(df['sale_date'])
+        df['total'] = df['quantity'] * df['price']  # Recalculate total for validation
+        logging.info("Data transformations completed")
+
+        # Save the transformed data to a CSV file
+        output_path = '../data/transformed_sales_data.csv'
+        df.to_csv(output_path, index=False)
+        logging.info(f"Transformed data saved to {output_path}")
+
+        print("ETL process completed successfully!")
+        logging.info("ETL process completed successfully")
+
+    except mysql.connector.Error as db_err:
+        logging.error(f"Database error: {db_err}")
+        print(f"ETL process failed: {db_err}")
+
+    except Exception as e:
+        logging.error(f"General error: {e}")
+        print(f"ETL process failed: {e}")
+
+    finally:
+        # No need to explicitly close the connection with SQLAlchemy
+        logging.info("ETL process ended")
+
+if __name__ == "__main__":
+    run_etl()

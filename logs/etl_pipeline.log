@@ -1,0 +1,48 @@
+2024-12-30 22:56:38,126 - INFO - Starting ETL process.
+2024-12-30 22:56:38,245 - ERROR - ETL process failed: 1045 (28000): Access denied for user 'your_username'@'localhost' (using password: YES)
+2024-12-30 22:58:36,457 - INFO - Starting ETL process.
+2024-12-30 22:58:36,574 - ERROR - ETL process failed: Execution failed on sql 'SELECT * FROM raw_sales_data': 1146 (42S02): Table 'sales_data_pipeline.raw_sales_data' doesn't exist
+2024-12-30 22:58:36,575 - INFO - Database connection closed.
+2024-12-30 23:00:08,117 - INFO - Starting ETL process.
+2024-12-30 23:00:08,233 - ERROR - ETL process failed: Execution failed on sql 'SELECT * FROM sales_data_pipeline': 1146 (42S02): Table 'sales_data_pipeline.sales_data_pipeline' doesn't exist
+2024-12-30 23:00:08,235 - INFO - Database connection closed.
+2024-12-31 00:00:55,556 - INFO - Starting ETL process
+2024-12-31 00:00:55,673 - INFO - Database connection established
+2024-12-31 00:00:55,816 - INFO - Data successfully retrieved from database
+2024-12-31 00:00:55,860 - INFO - Data transformations completed
+2024-12-31 00:00:55,907 - INFO - Transformed data saved to ../data/transformed_sales_data.csv
+2024-12-31 00:00:55,909 - INFO - ETL process completed successfully
+2024-12-31 00:00:55,910 - INFO - Database connection closed
+2024-12-31 00:15:30,461 - INFO - Starting ETL process
+2024-12-31 00:15:30,490 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:15:30,490 - ERROR - General error: name 'connection' is not defined
+2024-12-31 00:15:43,933 - INFO - Starting ETL process
+2024-12-31 00:15:43,962 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:15:43,962 - ERROR - General error: name 'connection' is not defined
+2024-12-31 00:18:34,091 - INFO - Starting ETL process
+2024-12-31 00:18:34,128 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:18:34,156 - ERROR - General error: (mysql.connector.errors.DatabaseError) 2005 (HY000): Unknown MySQL server host '#Siege@localhost' (11003)
+(Background on this error at: https://sqlalche.me/e/20/4xp6)
+2024-12-31 00:18:34,158 - INFO - ETL process ended
+2024-12-31 00:20:34,021 - INFO - Starting ETL process
+2024-12-31 00:20:34,052 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:20:34,065 - ERROR - General error: (mysql.connector.errors.DatabaseError) 2005 (HY000): Unknown MySQL server host '#Siege'@localhost' (11003)
+(Background on this error at: https://sqlalche.me/e/20/4xp6)
+2024-12-31 00:20:34,066 - INFO - ETL process ended
+2024-12-31 00:21:00,400 - INFO - Starting ETL process
+2024-12-31 00:21:00,432 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:21:00,454 - ERROR - General error: (mysql.connector.errors.ProgrammingError) 1045 (28000): Access denied for user 'root@R6@#Siege'@'localhost' (using password: NO)
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2024-12-31 00:21:00,455 - INFO - ETL process ended
+2024-12-31 00:21:17,321 - INFO - Starting ETL process
+2024-12-31 00:21:17,350 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:21:17,364 - ERROR - General error: (mysql.connector.errors.DatabaseError) 2005 (HY000): Unknown MySQL server host '#Siege@localhost' (11003)
+(Background on this error at: https://sqlalche.me/e/20/4xp6)
+2024-12-31 00:21:17,364 - INFO - ETL process ended
+2024-12-31 00:23:50,955 - INFO - Starting ETL process
+2024-12-31 00:23:50,986 - INFO - Database connection established using SQLAlchemy
+2024-12-31 00:23:51,072 - INFO - Data successfully retrieved from database
+2024-12-31 00:23:51,073 - INFO - Data transformations completed
+2024-12-31 00:23:51,078 - INFO - Transformed data saved to ../data/transformed_sales_data.csv
+2024-12-31 00:23:51,078 - INFO - ETL process completed successfully
+2024-12-31 00:23:51,078 - INFO - ETL process ended
