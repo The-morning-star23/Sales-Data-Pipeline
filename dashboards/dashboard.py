@@ -1,26 +1,29 @@
-import dash
-from dash import dcc, html
-from dash.dependencies import Input, Output
-import pandas as pd
-from dotenv import load_dotenv
 import os
+import pandas as pd
+from dash import Dash, dcc, html, Input, Output
+from dotenv import load_dotenv
+import dash.exceptions
 
 # Load environment variables
 load_dotenv()
 
-username = os.getenv("root")
-password = os.getenv("R6@#Siege")
-database = os.getenv("sales_data_pipeline")
-
 # Load transformed data
-df = pd.read_csv('data/transformed_sales_data.csv')
+DATA_PATH = os.getenv("DATA_PATH", "data/transformed_sales_data.csv")
+if not os.path.exists(DATA_PATH):
+    raise FileNotFoundError(f"Data file not found at {DATA_PATH}")
+
+df = pd.read_csv(DATA_PATH)
 
 # Ensure necessary columns exist
 if 'month' not in df.columns:
     df['month'] = pd.to_datetime(df['sale_date']).dt.month
 
+if 'total_sales' not in df.columns:
+    df['total_sales'] = df['total']  # Assuming 'total' is the column to use
+
 # Initialize Dash app
-app = dash.Dash(__name__)
+app = Dash(__name__)
+app.title = "Enhanced Sales Dashboard"
 
 # App layout
 app.layout = html.Div([
@@ -31,7 +34,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='region-dropdown',
             options=[{'label': region, 'value': region} for region in df['region_name'].unique()],
-            value=df['region_name'].unique()[0]
+            value=df['region_name'].unique()[0] if not df.empty else None
         )
     ], style={'width': '48%', 'display': 'inline-block'}),
 
@@ -40,7 +43,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='category-dropdown',
             options=[{'label': category, 'value': category} for category in df['category'].unique()],
-            value=df['category'].unique()[0]
+            value=df['category'].unique()[0] if not df.empty else None
         )
     ], style={'width': '48%', 'display': 'inline-block'}),
 
@@ -65,9 +68,9 @@ def update_dashboard(selected_region, selected_category):
         # Filter data
         filtered_df = df[(df['region_name'] == selected_region) & (df['category'] == selected_category)]
 
-        # Check if data is available
+        # Handle empty filtered data
         if filtered_df.empty:
-            raise ValueError("No data available for the selected filters.")
+            raise dash.exceptions.PreventUpdate
 
         # Bar chart: Total sales by month
         bar_chart = {
@@ -79,7 +82,7 @@ def update_dashboard(selected_region, selected_category):
             }],
             'layout': {
                 'title': f"Monthly Sales in {selected_region} ({selected_category})",
-                'xaxis': {'title': 'Month'},
+                'xaxis': {'title': 'Month (Jan-Dec)'},
                 'yaxis': {'title': 'Total Sales'},
                 'template': 'plotly_dark'
             }
@@ -95,7 +98,7 @@ def update_dashboard(selected_region, selected_category):
             }],
             'layout': {
                 'title': f"Sales Trend in {selected_region} ({selected_category})",
-                'xaxis': {'title': 'Month'},
+                'xaxis': {'title': 'Month (Jan-Dec)'},
                 'yaxis': {'title': 'Total Sales'},
                 'template': 'plotly_dark'
             }
@@ -103,8 +106,7 @@ def update_dashboard(selected_region, selected_category):
 
         return bar_chart, time_series
 
-    except ValueError as e:
-        # Handle empty data
+    except Exception as e:
         return {
             'data': [],
             'layout': {

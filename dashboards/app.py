@@ -1,24 +1,43 @@
 from flask import Flask, render_template, jsonify
 import pandas as pd
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load the transformed data
-data_file = '../data/transformed_sales_data.csv'
+# Configuration
+DATA_FILE = os.getenv("DATA_FILE", "../data/transformed_sales_data.csv")
+
+# Utility function to load and validate data
+def load_data(file_path):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Data file not found: {file_path}")
+    data = pd.read_csv(file_path)
+    
+    # Ensure necessary columns exist
+    required_columns = ['total_sales', 'quantity', 'region_name', 'product_name']
+    missing_columns = [col for col in required_columns if col not in data.columns]
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+    
+    return data
 
 @app.route('/')
 def home():
     """Homepage displaying sales summary."""
-    # Load data
     try:
-        data = pd.read_csv(data_file)
-        total_sales = data['Sales'].sum()
-        total_quantity = data['Quantity'].sum()
-        regions = data['Region'].nunique()
-        products = data['Product'].nunique()
+        data = load_data(DATA_FILE)
+        total_sales = data['total_sales'].sum()
+        total_quantity = data['quantity'].sum()
+        regions = data['region_name'].nunique()
+        products = data['product_name'].nunique()
     except Exception as e:
-        return f"Error loading data: {e}"
+        app.logger.error(f"Error loading data: {e}")
+        return render_template('error.html', message="Unable to load sales data. Please try again later.")
 
     return render_template(
         'dashboard.html',
@@ -32,10 +51,11 @@ def home():
 def api_sales():
     """API endpoint to serve sales data as JSON."""
     try:
-        data = pd.read_csv(data_file)
+        data = load_data(DATA_FILE)
         return jsonify(data.to_dict(orient='records'))
     except Exception as e:
-        return {"error": f"Error loading data: {e}"}, 500
+        app.logger.error(f"Error loading data: {e}")
+        return {"error": "Unable to load sales data."}, 500
 
 if __name__ == '__main__':
     app.run(debug=True)
