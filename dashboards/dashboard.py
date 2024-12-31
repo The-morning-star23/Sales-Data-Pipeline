@@ -5,6 +5,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import os
 
+# Load environment variables
 load_dotenv()
 
 username = os.getenv("root")
@@ -13,6 +14,10 @@ database = os.getenv("sales_data_pipeline")
 
 # Load transformed data
 df = pd.read_csv('data/transformed_sales_data.csv')
+
+# Ensure necessary columns exist
+if 'month' not in df.columns:
+    df['month'] = pd.to_datetime(df['sale_date']).dt.month
 
 # Initialize Dash app
 app = dash.Dash(__name__)
@@ -56,41 +61,63 @@ app.layout = html.Div([
      Input('category-dropdown', 'value')]
 )
 def update_dashboard(selected_region, selected_category):
-    filtered_df = df[(df['region_name'] == selected_region) & (df['category'] == selected_category)]
+    try:
+        # Filter data
+        filtered_df = df[(df['region_name'] == selected_region) & (df['category'] == selected_category)]
 
-    # Bar chart: Total sales by month
-    bar_chart = {
-        'data': [{
-            'x': filtered_df['month'],
-            'y': filtered_df['total_sales'],
-            'type': 'bar',
-            'name': selected_region
-        }],
-        'layout': {
-            'title': f"Monthly Sales in {selected_region} ({selected_category})",
-            'xaxis': {'title': 'Month'},
-            'yaxis': {'title': 'Total Sales'},
-            'template': 'plotly_dark'
+        # Check if data is available
+        if filtered_df.empty:
+            raise ValueError("No data available for the selected filters.")
+
+        # Bar chart: Total sales by month
+        bar_chart = {
+            'data': [{
+                'x': filtered_df['month'],
+                'y': filtered_df['total_sales'],
+                'type': 'bar',
+                'name': selected_region
+            }],
+            'layout': {
+                'title': f"Monthly Sales in {selected_region} ({selected_category})",
+                'xaxis': {'title': 'Month'},
+                'yaxis': {'title': 'Total Sales'},
+                'template': 'plotly_dark'
+            }
         }
-    }
 
-    # Time series: Sales trend
-    time_series = {
-        'data': [{
-            'x': filtered_df['month'],
-            'y': filtered_df['total_sales'],
-            'type': 'line',
-            'name': selected_region
-        }],
-        'layout': {
-            'title': f"Sales Trend in {selected_region} ({selected_category})",
-            'xaxis': {'title': 'Month'},
-            'yaxis': {'title': 'Total Sales'},
-            'template': 'plotly_dark'
+        # Time series: Sales trend
+        time_series = {
+            'data': [{
+                'x': filtered_df['month'],
+                'y': filtered_df['total_sales'],
+                'type': 'line',
+                'name': selected_region
+            }],
+            'layout': {
+                'title': f"Sales Trend in {selected_region} ({selected_category})",
+                'xaxis': {'title': 'Month'},
+                'yaxis': {'title': 'Total Sales'},
+                'template': 'plotly_dark'
+            }
         }
-    }
 
-    return bar_chart, time_series
+        return bar_chart, time_series
+
+    except ValueError as e:
+        # Handle empty data
+        return {
+            'data': [],
+            'layout': {
+                'title': 'No Data Available',
+                'template': 'plotly_dark'
+            }
+        }, {
+            'data': [],
+            'layout': {
+                'title': 'No Data Available',
+                'template': 'plotly_dark'
+            }
+        }
 
 # Callback for downloading filtered data
 @app.callback(
