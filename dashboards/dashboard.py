@@ -2,6 +2,14 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+username = os.getenv("root")
+password = os.getenv("R6@#Siege")
+database = os.getenv("sales_data_pipeline")
 
 # Load transformed data
 df = pd.read_csv('data/transformed_sales_data.csv')
@@ -98,4 +106,4 @@ def download_filtered_data(selected_region, selected_category, n_clicks):
     return dcc.send_data_frame(filtered_df.to_csv, "filtered_sales_data.csv")
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
