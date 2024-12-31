@@ -106,4 +106,4 @@ def download_filtered_data(selected_region, selected_category, n_clicks):
     return dcc.send_data_frame(filtered_df.to_csv, "filtered_sales_data.csv")
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(host="0.0.0.0", port=8050)
