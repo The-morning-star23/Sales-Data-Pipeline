@@ -1,4 +1,0 @@
-id,sale_date,product_name,category,region_name,quantity,price,total
-1,2024-12-01 10:00:00,Laptop,Electronics,North,2,50000.0,100000.0
-2,2024-12-01 11:00:00,Mouse,Accessories,South,10,500.0,5000.0
-3,2024-12-01 12:00:00,Keyboard,Accessories,East,5,1000.0,5000.0

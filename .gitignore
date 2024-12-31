@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Data files
+data/
+*.csv
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Node.js files (if applicable)
+node_modules/
+npm-debug.log*
+
+# Flask build files
+*.db
+instance/
+.pytest_cache/
+
+# Dash specific cache
+.cache/
+.dash/
+
+# Generated documentation
+docs/_build/
+
+# MacOS-specific
+.DS_Store
+
+# Windows-specific
+*.bak
