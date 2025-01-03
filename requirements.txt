@@ -7,3 +7,4 @@ mysql-connector-python
 kafka-python
 plotly
 gunicorn
+python-dotenv
